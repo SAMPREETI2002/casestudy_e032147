@@ -1,16 +1,27 @@
-// src/pages/PostpaidPlans.js
-import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Import hook for navigation
+import React, { useEffect, useState, useContext } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Hook for navigation
+import { UserContext } from '../UserContext'; // Fetch email from context
+import './PrepaidPlan.css'; // Import the CSS file
 
-function PostpaidPlans() {
+const PostpaidPlans = () => {
+  const [postpaidPlans, setPostpaidPlans] = useState([]);
+  const [error, setError] = useState(null);
+  const { userEmail } = useContext(UserContext); // Fetch the email from context
   const navigate = useNavigate();
 
-  const plans = [
-    { name: 'PLAN A', description: 'Unlimited Calls', price: 50 },
-    { name: 'PLAN B', description: 'Family Pack', price: 70 },
-    { name: 'PLAN C', description: 'Data Saver', price: 40 },
-    { name: 'PLAN D', description: 'Premium Plan', price: 100 },
-  ];
+  useEffect(() => {
+    const fetchPostpaidPlans = async () => {
+      try {
+        const response = await axios.get('http://localhost:9099/postpaidPlans'); // Adjust URL if needed
+        setPostpaidPlans(response.data.postpaidPlans);
+      } catch (error) {
+        setError('Error fetching postpaid plans');
+      }
+    };
+
+    fetchPostpaidPlans();
+  }, []);
 
   const handleBuyPlan = (planDetails) => {
     // Navigate to Invoice page with selected plan details
@@ -19,29 +30,31 @@ function PostpaidPlans() {
 
   return (
     <div className="container">
-      <header>
-        <div className="logo">TELSTAR</div>
-      </header>
-
+  
       <main>
         <h1>Postpaid Plans</h1>
         <p>Select a plan that suits you best.</p>
 
         <div className="plans-container">
-          {plans.map((plan) => (
-            <div className="plan" key={plan.name}>
-              <h3>{plan.name}</h3>
-              <h4>{plan.description}</h4>
-              <p>Price: Rs{plan.price}</p>
-              <div className="buttonplace">
-                <button onClick={() => handleBuyPlan(plan)}>Buy Plan</button>
+          {error && <p className="error-message">{error}</p>}
+          {postpaidPlans.length > 0 ? (
+            postpaidPlans.map((plan) => (
+              <div className="plan" key={plan.id}>
+                <h3 className="plan-name">{plan.planName}</h3>
+                <h4 className="plan-description">{plan.planDescription}</h4>
+                <p>Billing period: { plan.billingCycle}</p>
+                <div className="buttonplace">
+                  <button onClick={() => handleBuyPlan(plan)} className="buy-button">Buy Plan</button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p>No postpaid plans available.</p>
+          )}
         </div>
       </main>
     </div>
   );
-}
+};
 
 export default PostpaidPlans;

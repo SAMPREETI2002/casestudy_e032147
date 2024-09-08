@@ -1,0 +1,36 @@
+/* Navbar background and font color */
+.custom-navbar {
+    background-color: #48CFCB; /* Custom background color */
+  }
+  
+  .navbar-brand {
+    color: black; /* TELSTAR in black */
+    font-weight: bold;
+    font-size: 1.5rem;
+  }
+  
+  .navbar-nav .nav-link {
+    color: white; /* Home and About Us links in white */
+    font-size: 1.1rem;
+  }
+  
+  .navbar-nav .nav-link:hover {
+    color: #f1f1f1; /* Lighter hover color */
+  }
+  
+  /* Custom styling for Register and Login buttons */
+  .btn-custom {
+    color: white; /* Button text color */
+    background-color: #0056b3; /* Custom blue color for buttons */
+    border: none;
+  }
+  
+  .btn-custom:hover {
+    background-color: #004494; /* Darker blue on hover */
+  }
+  
+  /* Additional spacing for buttons */
+  .ms-2 {
+    margin-left: 0.5rem; /* Bootstrap spacing utility */
+  }
+  

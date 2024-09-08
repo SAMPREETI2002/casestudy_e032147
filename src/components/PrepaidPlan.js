@@ -1,47 +1,64 @@
-// src/pages/PrepaidPlans.js
-import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Import hook for navigation
+import React, { useEffect, useState, useContext } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Hook for navigation
+import { UserContext } from '../UserContext'; // Fetch email from context
+import './PrepaidPlan.css'; // Import the CSS file
 
-function PrepaidPlans() {
+const PrepaidPlans = () => {
+  const [prepaidPlans, setPrepaidPlans] = useState([]);
+  const [error, setError] = useState(null);
+  const { userEmail } = useContext(UserContext); // Fetch the email from context
   const navigate = useNavigate();
 
-  const plans = [
-    { name: 'PLAN A', description: 'Unlimited Calls', price: 50 },
-    { name: 'PLAN B', description: 'Family Pack', price: 70 },
-    { name: 'PLAN C', description: 'Data Saver', price: 40 },
-    { name: 'PLAN D', description: 'Premium Plan', price: 100 },
-  ];
+  useEffect(() => {
+    const fetchPrepaidPlans = async () => {
+      try {
+        const response = await axios.get('http://localhost:9099/prepaidPlans'); // Adjust URL if needed
+        setPrepaidPlans(response.data.prepaidPlans);
+      } catch (error) {
+        setError('Error fetching prepaid plans');
+      }
+    };
 
-  const handleBuyPlan = (planDetails) => {
-    // Navigate to Invoice page with selected plan details
-    navigate('/invoice', { state: { planDetails } });
+    fetchPrepaidPlans();
+  }, []);
+
+  const handleBuyPlan = (planId) => {
+    // Navigate to Payment page with the selected plan ID
+    navigate('/payment-gateway', { state: { planId } });
   };
 
   return (
     <div className="container">
-      <header>
-        <div className="logo">TELSTAR</div>
-      </header>
-
       <main>
         <h1>Prepaid Plans</h1>
         <p>Select a plan that suits you best.</p>
 
         <div className="plans-container">
-          {plans.map((plan) => (
-            <div className="plan" key={plan.name}>
-              <h3>{plan.name}</h3>
-              <h4>{plan.description}</h4>
-              <p>Price: Rs{plan.price}</p>
-              <div className="buttonplace">
-                <button onClick={() => handleBuyPlan(plan)}>Buy Plan</button>
+          {error && <p className="error-message">{error}</p>}
+          {prepaidPlans.length > 0 ? (
+            prepaidPlans.map((plan) => (
+              <div className="plan" key={plan.id}>
+                <h3 className="plan-name">{plan.planName}</h3>
+                <h4 className="plan-description">{plan.planDescription}</h4>
+                <p>Price: ${plan.prepaidBalance}</p>
+                <div className="buttonplace">
+                  <button 
+                    onClick={() => handleBuyPlan(plan.id)} 
+                    className="buy-button"
+                  >
+                    Buy Plan
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p>No prepaid plans available.</p>
+          )}
         </div>
       </main>
     </div>
   );
-}
+};
 
 export default PrepaidPlans;

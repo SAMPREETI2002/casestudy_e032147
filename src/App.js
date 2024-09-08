@@ -1,37 +1,29 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import LandingPage from './components/LandingPage';
-import Register from './components/Register';
-import Login from './components/Login';
-import PostpaidPlan from './components/postpaidPlan';
-import PrepaidPlan from './components/PrepaidPlan';
-import AdminDashboard from './components/AdminDashboard';
-import AddPlans from './components/AddPlans';
-import AddCustomer from './components/AddCustomer';
-import Invoice from './components/Invoice';
-import PaymentGateway from './components/Paymentgateway';
-import LoggedInLandingPage from './components/LoggedInLoginpage';
-import LoggedOutPage from './components/LoggedOut';
+import React, { useContext } from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import AppRoutes from './AppRoutes';  // Import the routing component
+import { UserProvider, UserContext } from './UserContext'; // Import the context provider
+import Navbar from './components/Navbar'; // Unauthenticated Navbar
+import Navbar1 from './components/Navbar1'; // Authenticated Navbar
 
-function App() {
+const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/postpaid" element={<PostpaidPlan/>}/>
-        <Route path="/prepaid" element={<PrepaidPlan/>}/>
-        <Route path="/admindashboard" element={<AdminDashboard/>}/>
-        <Route path="/addplans" element={<AddPlans/>}/>
-        <Route path="/addCustomer" element={<AddCustomer/>}/>
-        <Route path="/invoice" element={<Invoice/>}/>
-        <Route path="/payment-gateway" element={<PaymentGateway/>}/>
-        <Route path="/loggedinloginpage" element={<LoggedInLandingPage/>}/>
-        <Route path="/logout" element={<LoggedOutPage/>}/>
-      </Routes>
-    </Router>
+    <UserProvider> {/* Wrap the app with UserProvider */}
+      <Router>
+        <MainApp /> {/* Separate main app component to use context */}
+      </Router>
+    </UserProvider>
   );
-}
+};
+
+const MainApp = () => {
+  const { isAuthenticated } = useContext(UserContext); // Get authentication status from UserContext
+
+  return (
+    <>
+      {isAuthenticated ? <Navbar1 /> : <Navbar />} {/* Conditionally render Navbar based on authentication */}
+      <AppRoutes /> {/* The rest of your application routes */}
+    </>
+  );
+};
 
 export default App;
