@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { UserContext } from './UserContext';  // Import UserContext
-
+import ViewHistory from './components/ViewHistory'
 import LandingPage from './components/LandingPage';
 import Register from './components/Register';
 import Login from './components/Login';
@@ -31,7 +31,7 @@ const AppRoutes = () => {
       <Route path="/invoice" element={isAuthenticated ? <Invoice /> : <Navigate to="/login" />} />
       <Route path="/payment-gateway" element={isAuthenticated ? <PaymentGateway /> : <Navigate to="/login" />} />
       <Route path="/loggedinloginpage" element={isAuthenticated ? <LoggedInLoginPage /> : <Navigate to="/login" />} />
-
+      <Route path="/ViewHistory" element={isAuthenticated ? <ViewHistory /> : <Navigate to="/ViewHistory" />} />
       {/* Admin Routes */}
       <Route path="/admindashboard" element={isAuthenticated && isAdmin ? <AdminDashboard /> : <Navigate to={isAuthenticated ? "/loggedinloginpage" : "/login"} />} />
       <Route path="/addplans" element={isAuthenticated && isAdmin ? <AddPlans /> : <Navigate to={isAuthenticated ? "/loggedinloginpage" : "/login"} />} />

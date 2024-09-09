@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import './payment-gateway.css';
-import { useLocation } from 'react-router-dom'; // To access planId from the previous route
+import { useLocation } from 'react-router-dom';
 import { FaCreditCard, FaGooglePay, FaPaypal, FaPhone, FaWallet } from 'react-icons/fa';
+import { UserContext } from '../UserContext'; // Ensure UserContext is correctly set up
 
 function Payment() {
-  const location = useLocation(); // Get the state from the previous page
-  const { planId } = location.state || {}; // Access the planId passed from PrepaidPlans
+  const location = useLocation();
+  const { planId } = location.state || {}; // Get planId from state
+  const { userEmail } = useContext(UserContext); // Get userEmail from UserContext
 
   const [paymentMethod, setPaymentMethod] = useState('');
   const [cardNumber, setCardNumber] = useState('');
@@ -20,25 +22,31 @@ function Payment() {
     e.preventDefault();
 
     try {
-      // Prepare data based on the selected payment method
-      let data = { paymentMethod, planId }; // Include planId in the data
+      // Prepare data with userEmail and planId
+      const data = { 
+        planId,
+        userEmail
+      };
+
+      // Add payment-specific data based on method
       if (paymentMethod === 'card') {
-        data = { ...data, cardNumber, cardName, bankName, cvv };
+        data.cardNumber = cardNumber;
+        data.cardName = cardName;
+        data.bankName = bankName;
+        data.cvv = cvv;
       } else if (paymentMethod === 'upi') {
-        data = { ...data, upiOption };
+        data.upiOption = upiOption;
       } else if (paymentMethod === 'wallet') {
-        data = { ...data, walletBalance };
+        data.walletBalance = walletBalance;
       }
-      // Make the POST request to the backend
-      const token = localStorage.getItem('token');
-      console.log("Token from localStorage:", token);
-      await axios.post('http://localhost:9099/payInvoice', data, {
-        headers: {
-          'x-access-token': localStorage.getItem('token') // Adjust the token handling as needed
-        }
-        
-      });
-      alert('Payment successful');
+
+      // Send the data to the backend
+      const response = await axios.post('http://localhost:9099/buyPlan', data);
+
+      // Check response to show alert
+      if (response.status === 201) {
+        alert('Payment successful');
+      }
     } catch (error) {
       console.error('Error processing payment:', error);
       alert('Error processing payment');
@@ -47,7 +55,7 @@ function Payment() {
 
   return (
     <div className="container">
-      <h2>Choose Payment options for Plan ID: {planId}</h2>
+      <h2>Choose Payment Method for Plan ID: {planId}</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>

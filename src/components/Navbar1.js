@@ -42,10 +42,10 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto">
             <li className="nav-item">
-              <Link className="nav-link" to="/generate-invoice">Generate Invoice</Link>
+              <Link className="nav-link" to="/invoice">Generate Invoice</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/payment-history">Payment History</Link>
+              <Link className="nav-link" to="/ViewHistory">Payment History</Link>
             </li>
           </ul>
 
